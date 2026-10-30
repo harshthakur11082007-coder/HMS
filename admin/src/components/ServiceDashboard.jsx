@@ -47,7 +47,7 @@ function normalizeService(doc) {
   };
 }
 
-const API_BASE =  "http://localhost:4000";
+const API_BASE =  "https://hms-backend-0jzu.onrender.com";
 
 const ServiceDashboard = ({ services: servicesProp = null }) => {
     const [services, setServices] = useState(

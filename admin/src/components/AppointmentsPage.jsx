@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { keyframesStyles, pageStyles } from "../assets/dummyStyles";
 import { Search } from "lucide-react";
-const API_BASE = "http://localhost:4000";
+const API_BASE = "https://hms-backend-0jzu.onrender.com";
 
 // Helper Function
 // this function return the date as 22 Jan 2026

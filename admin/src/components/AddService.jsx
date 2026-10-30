@@ -3,7 +3,7 @@ import { addServiceStyles } from '../assets/dummyStyles'
 import { Calendar, CheckCircle, Plus, Image } from 'lucide-react';
 
 const AddService = ({serviceId}) => {
-    const API_BASE =  "http://localhost:4000";
+    const API_BASE =  "";
 
   const fileRef = useRef(null);
   const [imagePreview, setImagePreview] = useState(null);

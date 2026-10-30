@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useMemo } from "react";
 
 const DoctorsPage = () => {
-  const API_BASE = 'http://localhost:4000';
+  const API_BASE = 'https://hms-backend-0jzu.onrender.com';
 
   const [allDoctors, setAllDoctors] = useState([]);
   const [loading, setLoading] = useState(true);

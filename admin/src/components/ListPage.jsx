@@ -70,7 +70,7 @@ function getSortedScheduleDates(scheduleLike) {
   return [...past, ...future].map((p) => p.ds);
 }
 const Listpage = () => {
-    const API_BASE =  "http://localhost:4000";
+    const API_BASE =  "https://hms-backend-0jzu.onrender.com";
   const [doctors, setDoctors] = useState([]);
   const [expanded, setExpanded] = useState(null);
   const [query, setQuery] = useState("");
