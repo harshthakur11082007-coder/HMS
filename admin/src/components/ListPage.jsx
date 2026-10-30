@@ -71,7 +71,7 @@ function getSortedScheduleDates(scheduleLike) {
 }
 const Listpage = () => {
     const API_BASE =  "http://localhost:4000";
-      const [doctors, setDoctors] = useState([]);
+  const [doctors, setDoctors] = useState([]);
   const [expanded, setExpanded] = useState(null);
   const [query, setQuery] = useState("");
   const [showAll, setShowAll] = useState(false);
@@ -415,7 +415,7 @@ const Listpage = () => {
 
             </main>
         </div>
-    )
+    );
 };
 
 export default Listpage;

@@ -444,4 +444,4 @@ function MobileDoctorCard({d}) {
       </div>
     </div>
   );
-}
+};

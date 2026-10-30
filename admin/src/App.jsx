@@ -8,6 +8,12 @@ import Add from "./pages/Add";
 import List from "./pages/List";
 import Appointments from "./pages/Appointments";
 import AppointmentsPage from "./components/AppointmentsPage";
+import SerDashboard from "./pages/SerDashboard";
+import AddSer from "./pages/AddSer";
+import ListService from "./pages/ListService";
+import ListServicePage from "./components/ListServicePage";
+import ServiceAppointmentsPage from "./pages/ServiceAppointments";
+import ServiceAppointments from "./pages/ServiceAppointments";
 
 
 function RequiredAuth ({ children }) {
@@ -76,6 +82,38 @@ const App = () => {
           </RequiredAuth>
          }
          />
+        <Route 
+          path="/service-dashboard"
+          element={
+            <RequiredAuth>
+              <SerDashboard />
+            </RequiredAuth>
+          }
+        />
+        <Route 
+          path="/add-service" 
+          element={
+            <RequiredAuth>
+                <AddSer />
+            </RequiredAuth>
+          } 
+        />
+        <Route
+          path="/list-service" 
+          element={
+          <RequiredAuth>
+            <ListService />
+          </RequiredAuth>
+          }
+        />
+        <Route 
+          path="/service-appointments" 
+          element={
+          <RequiredAuth>
+          <ServiceAppointments/>
+          </RequiredAuth>
+          }
+        />
     </Routes>
   );
 };
