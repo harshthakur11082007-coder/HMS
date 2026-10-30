@@ -1,10 +1,9 @@
 import Appointment from "../models/Appointment.js";
 import Doctor from "../models/Doctor.js";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 import Stripe from "stripe";
-import { getAuth } from "@clerk/express";
-import { clerkClient } from "@clerk/clerk-sdk-node";
-import { clerkJSScriptUrl } from "@clerk/react/internal";
+import { getAuth, clerkClient } from "@clerk/express";
+
 dotenv.config();
 
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY;
