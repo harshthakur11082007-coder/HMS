@@ -1,134 +1,156 @@
-import React, { useState } from "react"
+
+import React, { useState } from "react";
 import { loginPageStyles, toastStyles } from "../assets/dummyStyles";
-import logo from '../assets/logo.png';
+import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 const STORAGE_KEY = "doctorToken_v1";
+const API_BASE = import.meta.env.VITE_API_URL || "https://hms-backend-0jzu.onrender.com";
 
 const LoginPage = () => {
-    const API_BASE = 'https://hms-backend-0jzu.onrender.com';
-    const [formData, setFormData] = useState({email: "", password: ""});
-    const [busy, setBusy] = useState(false);
-    const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-    const handleChange = (e) => {
-        setFormData((s) => ({
-            ...s,
-            [e.target.name] : e.target.value
-        }));
+  const [busy, setBusy] = useState(false);
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    if (!formData.email.trim() || !formData.password) {
+      toast.error("All fields are required.", {
+        style: toastStyles.errorToast,
+      });
+      return;
     }
 
-    //to Login
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        if(!formData.email || !formData.password) {
-            toast.error("All fields are required.", {
-                style: toastStyles.errorToast
-            });
-            return;
-        }
+    setBusy(true);
 
-        setBusy(true);
-        try {
-            const res = await fetch(`${API_BASE}/api/doctors/login`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(formData)
-            });
+    try {
+      const res = await fetch(`${API_BASE}/api/doctors/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email.trim(),
+          password: formData.password,
+        }),
+      });
 
-        const json = await res.json().catch(()=> null);
+      const json = await res.json().catch(() => ({}));
 
-            if (!res.ok) {
-                    toast.error(json?.message || "Login failed", { duration: 4000 });
-                    setBusy(false);
-                    return;
-                }
-                const token = json?.token || json?.data?.token;
-                if (!token) {
-                    toast.error("Authentication token missing");
-                    setBusy(false);
-                    return;
-                }
+      if (!res.ok) {
+        throw new Error(json?.message || "Login failed");
+      }
 
-                const doctorId =
-                    json?.data?._id || json?.doctor?._id || json?.data?.doctor?._id;
-                if (!doctorId) {
-                    toast.error("Doctor ID missing from server response");
-                    setBusy(false);
-                    return;
-                }
+      const token = json?.token || json?.data?.token;
 
-                localStorage.setItem(STORAGE_KEY, token);
-                window.dispatchEvent(
-                    new StorageEvent("storage", { key: STORAGE_KEY, newValue: token }),
-                );
-                toast.success("Login successful — redirecting...", {
-                    style: toastStyles.successToast,
-                });
-                setTimeout(() => {
-                    navigate(`/doctor-admin/${doctorId}`);
-                }, 700);
-                  }
-                catch (err) {
-                console.error("login error", err);
-                toast.error("Network error during login");
-                } finally{
-                    setBusy(false);
-                }
-            }
+      const doctor =
+        json?.doctor ||
+        json?.data?.doctor ||
+        json?.data;
+
+      const doctorId = doctor?._id || doctor?.id;
+
+      if (!token || !doctorId) {
+        throw new Error("Invalid login response from server.");
+      }
+
+      localStorage.setItem(STORAGE_KEY, token);
+
+      // Notify same-tab components if they listen for this custom event.
+      window.dispatchEvent(
+        new CustomEvent("doctorAuthChanged", {
+          detail: { token },
+        })
+      );
+
+      toast.success("Login successful!", {
+        style: toastStyles.successToast,
+      });
+
+      navigate(`/doctor-admin/${doctorId}`, { replace: true });
+
+    } catch (err) {
+      console.error("Login error:", err);
+
+      toast.error(err.message || "Network error during login", {
+        style: toastStyles.errorToast,
+      });
+
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <div className={loginPageStyles.mainContainer}>
-     <Toaster position="top-right" reverseOrder={false} />
-     <button 
-        onClick={() => navigate("/")} 
-        className={loginPageStyles.backButton}>
-    <ArrowLeft className={loginPageStyles.backButtonIcon} />
-        Back to Home
-     </button>
+      <Toaster position="top-right" reverseOrder={false} />
 
-     <div className={loginPageStyles.loginCard}>
+      <button
+        onClick={() => navigate("/")}
+        className={loginPageStyles.backButton}
+        type="button"
+      >
+        <ArrowLeft className={loginPageStyles.backButtonIcon} />
+        Back to Home
+      </button>
+
+      <div className={loginPageStyles.loginCard}>
         <div className={loginPageStyles.logoContainer}>
-            <img src={logo} alt="logo" className={loginPageStyles.logo} />
+          <img src={logo} alt="logo" className={loginPageStyles.logo} />
         </div>
 
         <h2 className={loginPageStyles.title}>Doctor Admin</h2>
+
         <p className={loginPageStyles.subtitle}>
-            Sign in to manage your profile & schedule
+          Sign in to manage your profile & schedule
         </p>
-        
+
         <form onSubmit={handleLogin} className={loginPageStyles.form}>
-            <input 
-                type="email" 
-                name="email" 
-                placeholder="Email Address"
-                value={formData.email} 
-                onChange={handleChange} 
-                className={loginPageStyles.input} 
-                required
-            />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email Address"
+            value={formData.email}
+            onChange={handleChange}
+            className={loginPageStyles.input}
+            required
+            autoComplete="email"
+          />
 
-            <input 
-                type="password" 
-                name="password" 
-                placeholder="Password"
-                value={formData.password} 
-                onChange={handleChange} 
-                className={loginPageStyles.input} 
-                required
-            />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            className={loginPageStyles.input}
+            required
+            autoComplete="current-password"
+          />
 
-            <button 
-                type="submit"
-                disabled={busy}
-                className={loginPageStyles.submitButton}
-            >
-                {busy ? "Signing in..." : "Login"}
-            </button>
+          <button
+            type="submit"
+            disabled={busy}
+            className={loginPageStyles.submitButton}
+          >
+            {busy ? "Signing in..." : "Login"}
+          </button>
         </form>
-     </div>
+      </div>
     </div>
   );
 };

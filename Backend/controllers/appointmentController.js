@@ -189,8 +189,10 @@ export const createAppointment = async (req, res) => {
                 success: false,
                 message: "Doctor not found."
         });
+      }
 
          // Resolve owner, names, images, etc.
+         {
     let resolvedOwner = ownerFromBody || doctor.owner || null;
     if (!resolvedOwner) resolvedOwner = MAJOR_ADMIN_ID || String(doctorId);
 
